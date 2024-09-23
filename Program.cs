@@ -7,12 +7,17 @@ namespace AutomatedWarehouse
     {
         static void Main(string[] args)
         {
-            bool[,] Shelf = new bool[0, 0];
+            //bool[,] Shelf = new bool[0, 0];
+            string[,] Shelf = new string[0, 0];
+
             bool shouldNotExit = true;
 
             string name = "";
             int slotsCounter = 0;
             string content = "";
+
+            Package package = new Package(name, content);
+            Shelf shelf = new Shelf(name);
 
             while (shouldNotExit)
             {
@@ -28,6 +33,7 @@ namespace AutomatedWarehouse
                 switch (keyPressed.Key)
                 {
                     case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1:
                         WriteLine("");
                         SetCursorPosition(1, 2);
                         Write("Name: ");
@@ -36,19 +42,26 @@ namespace AutomatedWarehouse
                         SetCursorPosition(1, 6);
                         Write("Columns: ");
                         SetCursorPosition("Name: ".Length + 2, 2);
-                        name = ReadLine();
+                        shelf.nameShelf = ReadLine();
                         SetCursorPosition("Rows: ".Length + 2, 4);
                         ushort rows = ushort.Parse(ReadLine());
                         SetCursorPosition("Columns: ".Length + 2, 6);
                         ushort columns = ushort.Parse(ReadLine());
-                        Shelf = new bool[rows, columns];
-                        Shelf[1, 0] = true;
-                        Shelf[1, 2] = true;
-                        Shelf[2, 1] = true;
-                        Shelf[2, 2] = true;
-                        Shelf[2, 3] = true;
-                        Shelf[4, 2] = true;
-                        Shelf[4, 3] = true;
+                        Shelf = new string[rows, columns];
+                        for (int i = 0; i < Shelf.GetLength(0); i++)
+                        {
+                            for (int j = 0; j < Shelf.GetLength(1); j++)
+                            {
+                                Shelf[i, j] = null;
+                            }
+                        }
+                        //Shelf[1, 0] = true;
+                        //Shelf[1, 2] = true;
+                        //Shelf[2, 1] = true;
+                        //Shelf[2, 2] = true;
+                        //Shelf[2, 3] = true;
+                        //Shelf[4, 2] = true;
+                        //Shelf[4, 3] = true;
 
                         Clear();
                         WriteLine("Shelf successfully created");
@@ -62,7 +75,7 @@ namespace AutomatedWarehouse
                         {
                             for (int j = 0; j < Shelf.GetLength(1); j++)
                             {
-                                if (Shelf[i, j])
+                                if (Shelf[i, j]==null)
                                 {
                                     Write("|   ");
                                     ++slotsCounter;
@@ -77,11 +90,21 @@ namespace AutomatedWarehouse
                             WriteLine("");
                         }
                         WriteLine("");
-                        WriteLine("Name: " + name);
+                        WriteLine("Name: " + shelf.nameShelf);
                         WriteLine("");
                         WriteLine("Available slots: " + slotsCounter);
                         WriteLine("<Press Esc to continue>");
-                        ReadKey();
+                        bool stang = true;
+                        while (stang)
+                        {
+                            ConsoleKeyInfo choose = ReadKey(true);
+                            switch (choose.Key)
+                            {
+                                case ConsoleKey.Escape:
+                                    stang = false;
+                                    break;
+                            }
+                        }
                         break;
                     case ConsoleKey.D3:
                         WriteLine("");
@@ -98,10 +121,10 @@ namespace AutomatedWarehouse
                         SetCursorPosition("Columns: ".Length + 2, 6);
                         ushort columnPlace = ushort.Parse(ReadLine());
                         Clear();
-                        if (Shelf[rowPlace, columnPlace] == true)
+                        if (Shelf[rowPlace, columnPlace] == null)
                         {
                             WriteLine("Success");
-                            Shelf[rowPlace, columnPlace] = false;
+                            Shelf[rowPlace, columnPlace] = package.content;
                         }
                         else
                         {
@@ -119,18 +142,19 @@ namespace AutomatedWarehouse
                         SetCursorPosition("Column: ".Length + 2, 4);
                         ushort column = ushort.Parse(ReadLine());
                         Clear();
-                        if (Shelf[row, column])
+                        if (Shelf[row, column] == null)
                         {
-                            WriteLine("Slot occupied");
+                            WriteLine("Slot occupied (empty)");
                         }
                         else
                         {
                             WriteLine("Package successfully retrieved");
                             WriteLine("");
-                            WriteLine("Countent:" + content);
+                            WriteLine("Countent:" + Shelf[row, column]);
+                            WriteLine("");
                             WriteLine("<Press any key to continue>");
                             ReadKey();
-                            Shelf[row, column] = true;
+                            Shelf[row, column] = null;
                         }
                         Thread.Sleep(2000);
                         break;
@@ -141,5 +165,24 @@ namespace AutomatedWarehouse
                 }
             }
         }
+        class Package
+        {
+            public string name;
+            public string content;
+            public Package(string name, string content)
+            {
+                this.name = name;
+                this.content = content;
+            }
+        }
+        class Shelf
+        {
+            public string nameShelf;
+            public Shelf(string Name)
+            {
+                this.nameShelf = Name;
+            }
+        }
     }
 }
+    
